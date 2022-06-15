@@ -1,4 +1,5 @@
 # DER_Practice
+해당 Repository는 DER 연습을 위한 Repository입니다.
 
 ***
 
@@ -102,7 +103,7 @@ object : DB 모델에 대한 객체
 queryset : DB 모델에서 전달받은 객체(object)들의 목록  
 
 **[ORM 활용 명령어 사용 방법]**  
-([Model명].objects.~)  
+[Model명].objects.~  
 
 **[불러오기]**  
 .all() : 전체 데이터 불러오기  
