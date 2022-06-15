@@ -1,5 +1,5 @@
-# DER_Practice
-해당 Repository는 DER 연습을 위한 Repository입니다.
+# DRF_Practice
+해당 Repository는 DRF 연습을 위한 Repository입니다.
 
 ***
 
