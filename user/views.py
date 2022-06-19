@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 from rest_framework import permissions
 from rest_framework import status
 
+from user.serializers import UserSerializer
 
 # Create your views here.
 # class APIViewPractice(APIView): # CBV 방식
@@ -26,10 +27,24 @@ from rest_framework import status
 
 
 class UserView(APIView):
-    permission_classes = [permissions.AllowAny] # 누구나 view 조회 가능
+    # permission_classes = [permissions.AllowAny] # 누구나 view 조회 가능
     # permission_classes = [permissions.IsAdminUser] # admin만 view 조회 가능
-    # permission_classes = [permissions.IsAuthenticated] # 로그인 된 사용자만 view 조회 가능
+    permission_classes = [permissions.IsAuthenticated] # 로그인 된 사용자만 view 조회 가능
 
+    # 로그인 한 사용자 보여주기
+    def get(self, request):
+        # user = request.user # 로그인한 유저 정보
+
+        # # 역참조를 사용했을 때
+        # # 만약 참조할 필드가 one-to-one이라면 _set이 붙지 않는다.
+        # hobbys = user.userprofile.hobby.all()
+
+        # # 역참조를 사용하지 않았을 때
+        # user_profile = UserProfile.objects.get(user=user)
+        # hobbys = user_profile.hobby.all()
+        
+        return Response({"message" : "로그인한 사용자 정보"}, UserSerializer(request.user).data, status=status.HTTP_200_OK)
+    
     # 로그인 기능
     @csrf_exempt
     def post(self, request):
@@ -45,6 +60,8 @@ class UserView(APIView):
 
         return Response({"success": "로그인 완료"}, status=status.HTTP_200_OK)
     
+    def post 
+
     # 로그아웃
     def delete(self, request):
         logout(request)
