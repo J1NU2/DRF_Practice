@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from rest_framework import permissions
 from rest_framework import status
 
-from blog.models import Article
+from blog.models import Article, Category
 from blog.serializers import ArticleSerializer
 # from blog.models import Article as ArticleModel로 사용해도 괜찮다.
 
@@ -61,30 +61,44 @@ class ArticleView(APIView):
 
         # 제목, 내용, 카테고리 작성
         title = request.data.get("title", "")
-        content = request.data.get("content", "")
-        categories = request.data.get("category", []) # 카테고리는 여러개라 리스트로
+        contents = request.data.get("contents", "")
+        categories = request.data.get("categories", []) # 카테고리는 여러개라 리스트로
         
         # 조건1. 만약 title이 5자 이하라면 게시글을 작성할 수 없다고 리턴해주세요.
         if (len(title) <= 5):
             return Response({"error": "제목은 5글자 이상 작성해주세요."}, status=status.HTTP_400_BAD_REQUEST)
 
         # 조건2. 만약 content가 20자 이하라면 게시글을 작성할 수 없다고 리턴해주세요.
-        if (len(content) <= 20):
+        if (len(contents) <= 20):
             return Response({"error": "내용은 20글자 이상 작성해주세요."}, status=status.HTTP_400_BAD_REQUEST)
 
         # 조건3. 만약 카테고리가 지정되지 않았다면 카테고리를 지정해야 한다고 리턴해주세요.
-        if not len(categories):
+        if not categories:
             return Response({"error": "카테고리가 있어야 합니다."}, status=status.HTTP_400_BAD_REQUEST)
 
         # article = Article.objects.create(user=user, title=title, content=content)
         article = Article(
             user=user,
             title=title,
-            content=content,
+            content=contents,
         )
+
+        # 리스트의 형태로 입력받은 categories는 아직 값이 무엇인지 모른다.
+        # 그래서 Category.objects.get(필드명=변수명)을 통해 object의 형태로 받는다.
+        
+        # category_list 축약
+        # category_list = categories
+        # for category in category_list:
+        #     categorys = Category.objects.get(name=category)
+        #     Article.category.add(categorys)
+        category_list = [Category.objects.get(name=category) for category in categories]
+
         article.save()
-        # packing, unpacking
-        # 카테고리는 리스트 형태로 있기 때문에 unpacking을 해준 것
-        article.category.add(*categories)
+        # article.category. 를 넣는 방법
+        # 1. .add(obj, obj, obj) : 리스트에 들어간 값을 풀어서 하나씩 직접 넣어줌
+        # 2. .set(변수명) : 리스트 자체를 넣어줌
+        # 3. for문 내 .add(obj) : for문을 돌면서 하나씩 넣어줌
+        # 4. .add(*변수명) : 해당 변수 값을 넣어줌
+        article.category.set(category_list)
 
         return Response({"message": "게시글 작성 완료"}, status=status.HTTP_200_OK)

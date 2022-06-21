@@ -49,8 +49,8 @@ class UserView(APIView):
         # user_profile = UserProfile.objects.get(user=user)
         # hobbys = user_profile.hobby.all()
         
-        # return Response(UserSerializer(user, context={"user": user}).data)
-        return Response(UserSerializer(request.user).data, status=status.HTTP_200_OK)
+        return Response(UserSerializer(user, context={"user": user}).data, status=status.HTTP_200_OK)
+        # return Response(UserSerializer(request.user).data, status=status.HTTP_200_OK)
     
 
 class UserSignView(APIView):
