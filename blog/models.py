@@ -1,6 +1,5 @@
 from django.db import models
 from django.utils import timezone
-from datetime import timedelta
 
 
 # Create your models here.
@@ -19,9 +18,8 @@ class Article(models.Model):
     title = models.CharField("제목", max_length=100)
     category = models.ManyToManyField(to=Category, verbose_name="카테고리")
     content = models.TextField("내용")
-    show_date_start = models.DateTimeField("노출 시작 일자", auto_now_add=True)
-    show_date_end = models.DateTimeField("노출 종료 일자", default=timezone.now()+timedelta(days=7))
-    # show_date_end = models.DateTimeField("노출 종료 일자", default="2022-06-21 00:00:00")
+    show_date_start = models.DateTimeField("노출 시작 일자", default=timezone.now)
+    show_date_end = models.DateTimeField("노출 종료 일자", default=timezone.now)
 
     # show_date_start = models.DateTimeField("노출 종료 일자", default="")
     # show_date_end = models.DateTimeField("노출 종료 일자", default="")

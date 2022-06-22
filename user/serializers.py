@@ -2,9 +2,9 @@ from rest_framework import serializers
 
 from blog.serializers import ArticleSerializer, CommentSerializer
 
-from user.models import User
-from user.models import UserProfile
-from user.models import Hobby
+from user.models import Hobby as HobbyModel
+from user.models import UserProfile as UserProfileModel
+from user.models import User as UserModel
 
 
 # 취미
@@ -26,7 +26,7 @@ class HobbySerializer(serializers.ModelSerializer):
         return user_list
 
     class Meta:
-        model = Hobby
+        model = HobbyModel
         fields = ["name", "same_hobby_users"]
 
 
@@ -35,7 +35,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     hobby = HobbySerializer(many=True)
 
     class Meta:
-        model = UserProfile
+        model = UserProfileModel
         fields = ["introduction", "birthday", "age", "hobby"]
         # fields = "__all__" # 전체 필드
 
@@ -49,5 +49,5 @@ class UserSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True, source="comment_set")
 
     class Meta:
-        model = User
+        model = UserModel
         fields = ["username", "email", "fullname", "join_date", "userprofile", "articles", "comments"]
