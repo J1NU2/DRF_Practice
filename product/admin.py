@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.utils.html import mark_safe
 
 from product.models import Product
+from product.models import Review
 
 
 class ProductAdmin(admin.ModelAdmin):
@@ -38,3 +39,4 @@ class ProductAdmin(admin.ModelAdmin):
 
 # Register your models here.
 admin.site.register(Product, ProductAdmin)
+admin.site.register(Review)

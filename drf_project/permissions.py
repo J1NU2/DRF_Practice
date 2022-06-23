@@ -84,3 +84,36 @@ class IsAdminOrIsAuthenticatedReadOnly(BasePermission):
             return True
         
         return False
+
+
+class IsNotAuthenticatedReadOnlyOrMoreThanThreeDaysUserCreate(BasePermission):
+    # 관리자(admin)는 읽기/쓰기 가능
+    # 로그인 하지 않는 사용자 : 읽기(GET)
+    # 회원가입 후 3일 이상 지난 사용자 : 읽기/쓰기
+    SAFE_METHODS = ('GET', ) # 일반 사용자 권한 허용 : GET
+    # '접근 권한이 없습니다.'
+    message = '관리자 또는 회원가입 후 3일이 지나야 합니다.'
+
+    def has_permission(self, request, view):
+        user = request.user
+
+        if not user.is_authenticated:
+            response = {
+                "detail": "서비스를 이용하기 위해서는 로그인이 필요합니다.",
+            }
+            raise GenericAPIException(status_code=status.HTTP_401_UNAUTHORIZED, detail=response)
+
+        # 인증된 사용자가 관리자(admin)일 경우
+        if user.is_authenticated and user.is_admin:
+            return True
+
+        # 사용자가 인증되었고, 가입 후 3일이 지난 사용자일 경우
+        if user.is_authenticated and request.user.join_date < (timezone.now() - timedelta(days=3)):
+            return True
+
+        # 사용자가 인증되었고, 권한이 GET일 경우
+        elif user.is_authenticated and request.method in self.SAFE_METHODS:
+            return True
+        
+        return False
+        

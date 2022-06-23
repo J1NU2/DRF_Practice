@@ -7,7 +7,13 @@ from rest_framework import permissions
 from rest_framework import status
 
 from product.models import Product as ProductModel
+from product.models import Review as ReviewModel
+
 from product.serializers import ProductSerializer
+from product.serializers import ProductSecondSerializer
+
+from drf_project.permissions import IsNotAuthenticatedReadOnlyOrMoreThanThreeDaysUserCreate
+
 
 # Create your views here.
 class ProductView(APIView):
@@ -55,3 +61,23 @@ class ProductView(APIView):
 
         # 검증 실패 시 .errors를 통해 어디가 실패했는지 알려준다.
         return Response(product_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ProductSecondView(APIView):
+    parmission_classes = [IsNotAuthenticatedReadOnlyOrMoreThanThreeDaysUserCreate] # 사용자 지정 permission
+
+    def get(self, request):
+        user = request.user # 로그인된 사용자
+
+        if not user.is_authenticated:
+            return Response({"message": "로그인이 필요합니다."}, status=status.HTTP_401_UNAUTHORIZED)
+
+        show_date_now = timezone.now() # 현재 시간
+
+        # 현재 일자를 기준으로 노출 종료 일자가 지나지 않았거나, 활성화 여부가 True
+        # 로그인한 사용자가 등록한 상품들의 정보를 Serializer를 사용해 반환
+        terms = Q(show_date_end__gte=show_date_now) & Q(is_active=True)
+
+        products = ProductModel.objects.filter(terms)
+
+        return Response(ProductSecondSerializer(products, many=True).data, status=status.HTTP_200_OK)
